@@ -13,13 +13,20 @@ model Imovel {
   valor        Decimal       @db.Decimal(10, 2)
   endereco     String        @db.VarChar(255)
   bairro       String        @db.VarChar(60)
+  foto         String        @db.VarChar(255)
+  quarto       Int           @default(0) @db.Integer
+  banheiro     Int           @default(0) @db.Integer
+  cozinha      Int           @default(0) @db.Integer
+  sala         Int           @default(0) @db.Integer
+  garagem      Int           @default(0) @db.Integer
+  suite        Int           @default(0) @db.Integer
+  areaServico  Int           @default(0) @db.Integer
+  tipoImovel   TipoImovel
   isArquivado  Boolean       @default(false)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-  tipoImovel   TipoImovel
   usuarioId    Int
   usuario      Usuario       @relation(fields: [usuarioId], references: [id])
-  dependencias Dependencia[]
   agendamentos Agendamento[]
 
   @@map("imoveis")
@@ -33,36 +40,19 @@ enum TipoImovel {
   RURAL
 }
 
-model Dependencia {
-  id          Int      @id @default(autoincrement())
-  quarto      Int      @default(0) @db.Integer
-  banheiro    Int      @default(0) @db.Integer
-  cozinha     Int      @default(0) @db.Integer
-  sala        Int      @default(0) @db.Integer
-  garagem     Int      @default(0) @db.Integer
-  suite       Int      @default(0) @db.Integer
-  areaServico Int      @default(0) @db.Integer
-  imovelId    Int
-  imovel      Imovel   @relation(fields: [imovelId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@map("dependencias")
-}
-
 model Usuario {
-  id                 Int           @id @default(autoincrement())
-  nome               String        @db.VarChar(60)
-  email              String        @unique @db.VarChar(40)
-  senha              String        @db.VarChar(60)
-  isArquivado        Boolean       @default(false)
-  createdAt          DateTime      @default(now())
-  resetToken         String?
-  resetTokenExpires  DateTime?
-  updatedAt          DateTime      @updatedAt
-  tipoUsuario        TipoUsuario
-  logs               Log[]
-  imoveis            Imovel[]
+  id                  Int           @id @default(autoincrement())
+  nome                String        @db.VarChar(60)
+  email               String        @unique @db.VarChar(40)
+  senha               String        @db.VarChar(60)
+  isArquivado         Boolean       @default(false)
+  createdAt           DateTime      @default(now())
+  resetToken          String?
+  resetTokenExpires   DateTime?
+  updatedAt           DateTime      @updatedAt
+  tipoUsuario         TipoUsuario
+  logs                Log[]
+  imoveis             Imovel[]
   adminAgendamentos   Agendamento[] @relation("adminAgendamento")
   clienteAgendamentos Agendamento[] @relation("clienteAgendamento")
 
@@ -76,15 +66,14 @@ enum TipoUsuario {
 }
 
 model Log {
-  id          Int      @id @default(autoincrement())
-  descricao   String   @db.VarChar(60)
-  complemento String   @db.VarChar(255)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id          Int         @id @default(autoincrement())
+  descricao   String      @db.VarChar(60)
+  complemento String      @db.VarChar(255)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
   usuarioId   Int
-  usuario     Usuario  @relation(fields: [usuarioId], references: [id])
+  usuario     Usuario     @relation(fields: [usuarioId], references: [id])
   usuarioTipo TipoUsuario
-
 
   @@map("logs")
 }

@@ -19,14 +19,14 @@ const adminSchema = z.object({
 
 router.get("/", verificaToken, verificaAdmin, async (req, res) => {
   try {
-    const admins = await prisma.usuario.findMany()
-    res.status(200).json(admins)
+    const usuarios = await prisma.usuario.findMany()
+    res.status(200).json(usuarios)
   } catch (error) {
     res.status(400).json(error)
   }
 })
 
-router.post("/", verificaToken, verificaAdmin, async (req, res) => {
+router.post("/", verificaToken, verificaAdmin,  async (req, res) => {
   const valida = adminSchema.safeParse(req.body)
   if (!valida.success) {
     res.status(400).json({ erro: valida.error })
@@ -43,10 +43,10 @@ router.post("/", verificaToken, verificaAdmin, async (req, res) => {
   const hash = bcrypt.hashSync(valida.data.senha, salt)
 
   try {
-    const admin = await prisma.usuario.create({
+    const usuario = await prisma.usuario.create({
       data: { ...valida.data, senha: hash }
     })
-    res.status(201).json(admin)
+    res.status(201).json(usuario)
   } catch (error) {
     res.status(400).json(error)
   }
