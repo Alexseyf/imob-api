@@ -5,7 +5,7 @@ import { verificaToken } from "../middlewares/verificaToken";
 import { verificaAdmin } from "../middlewares/verificaAdmin";
 import { verificaSuporte } from "../middlewares/verificaSuporte";
 
-const prisma = new PrismaClient(
+const prisma = new PrismaClient();
 //   {
 //   log: [
 //     {
@@ -33,8 +33,6 @@ const prisma = new PrismaClient(
 //   console.log('Params: ' + e.params)
 //   console.log('Duration: ' + e.duration + 'ms')
 // }
-)
-
 
 const router = Router();
 
@@ -65,7 +63,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", verificaToken, verificaSuporte,  async (req, res) => {
+router.post("/", async (req, res) => {
   const valida = imovelSchema.safeParse(req.body);
   if (!valida.success) {
     res.status(400).json({ erro: valida.error });
@@ -82,22 +80,28 @@ router.post("/", verificaToken, verificaSuporte,  async (req, res) => {
   }
 });
 
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const imovel = await prisma.imovel.findUnique({
+      where: { id: Number(id) },
+    });
+    res.status(200).json(imovel);
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
 
-// router.post("/", verificaToken, verificaAdmin, async (req, res) => {
-//   const valida = imovelSchema.safeParse(req.body);
-//   if (!valida.success) {
-//     res.status(400).json({ erro: valida.error });
-//     return;
-//   }
-
-//   try {
-//     const imovel = await prisma.imovel.create({
-//       data: { ...valida.data },
-//     });
-//     res.status(201).json(imovel);
-//   } catch (error) {
-//     res.status(400).json(error);
-//   }
-// });
+router.delete("/:id", verificaToken, verificaSuporte, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const imovel = await prisma.imovel.delete({
+      where: { id: Number(id) },
+    });
+    res.status(200).json(imovel);
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
 
 export default router;

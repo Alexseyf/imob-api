@@ -17,7 +17,7 @@ const adminSchema = z.object({
   tipoUsuario: z.nativeEnum(TipoUsuario)
 })
 
-router.get("/", verificaToken, verificaAdmin, async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const usuarios = await prisma.usuario.findMany()
     res.status(200).json(usuarios)
@@ -26,7 +26,7 @@ router.get("/", verificaToken, verificaAdmin, async (req, res) => {
   }
 })
 
-router.post("/", verificaToken, verificaAdmin,  async (req, res) => {
+router.post("/",  async (req, res) => {
   const valida = adminSchema.safeParse(req.body)
   if (!valida.success) {
     res.status(400).json({ erro: valida.error })

@@ -5,11 +5,13 @@ import routesImoveis from './routes/imoveis'
 import routesLogin from './routes/login'
 import routesRecuperaSenha from './routes/recuperaSenha'
 import routesValidaSenha from './routes/validaSenha'
+import cors from 'cors'
 
 const app = express()
 const port = 3001
 
 app.use(express.json())
+app.use(cors())
 
 app.use("/admins", routesAdmins)
 app.use("/suporte", routesSuporte)
