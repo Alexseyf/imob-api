@@ -6,33 +6,6 @@ import { verificaAdmin } from "../middlewares/verificaAdmin";
 import { verificaSuporte } from "../middlewares/verificaSuporte";
 
 const prisma = new PrismaClient();
-//   {
-//   log: [
-//     {
-//       emit: 'event',
-//       level: 'query',
-//     },
-//     {
-//       emit: 'stdout',
-//       level: 'error',
-//     },
-//     {
-//       emit: 'stdout',
-//       level: 'info',
-//     },
-//     {
-//       emit: 'stdout',
-//       level: 'warn',
-//     },
-//   ],
-// }
-// )
-
-// prisma.$on('query', (e) => {
-//   console.log('Query: ' + e.query)
-//   console.log('Params: ' + e.params)
-//   console.log('Duration: ' + e.duration + 'ms')
-// }
 
 const router = Router();
 
@@ -92,7 +65,44 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", verificaToken, verificaSuporte, async (req, res) => {
+router.get("/pesquisa/:termo", async (req, res) => {
+  const { termo } = req.params;
+  const termoNumero = Number(termo);
+
+  if (isNaN(termoNumero)) {
+    try {
+      const tipoImovelValido = Object.values(TipoImovel).includes(termo.toUpperCase() as TipoImovel);
+      const imovel = await prisma.imovel.findMany({
+        where: {
+          OR: [
+            tipoImovelValido ? { tipoImovel: { equals: termo.toUpperCase() as TipoImovel } } : {},
+            { endereco: { contains: termo } },
+            { bairro: { contains: termo } },
+            
+          ].filter(Boolean),
+        },
+      });
+      res.status(200).json(imovel);
+    } catch (error) {
+      res.status(400).json(error);
+    }
+  } else {
+    if (termoNumero <= 3000) {
+      try {
+        const imovel = await prisma.imovel.findMany({
+          where: {
+            valor: { lte: termoNumero },
+          },
+        });
+        res.status(200).json(imovel);
+      } catch (error) {
+        res.status(400).json(error);
+      }
+    }
+  }
+});
+
+router.delete("/:id", verificaToken, async (req, res) => {
   const { id } = req.params;
   try {
     const imovel = await prisma.imovel.delete({

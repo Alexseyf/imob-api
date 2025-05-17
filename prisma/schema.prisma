@@ -79,16 +79,17 @@ model Log {
 }
 
 model Agendamento {
-  id        Int      @id @default(autoincrement())
-  data      DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  adminId   Int
-  admin     Usuario  @relation(fields: [adminId], references: [id], name: "adminAgendamento")
-  clienteId Int
-  cliente   Usuario  @relation(fields: [clienteId], references: [id], name: "clienteAgendamento")
-  imovelId  Int
-  imovel    Imovel   @relation(fields: [imovelId], references: [id])
+  id         Int      @id @default(autoincrement())
+  data       DateTime
+  confirmado Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  adminId    Int
+  admin      Usuario  @relation(fields: [adminId], references: [id], name: "adminAgendamento")
+  clienteId  Int
+  cliente    Usuario  @relation(fields: [clienteId], references: [id], name: "clienteAgendamento")
+  imovelId   Int
+  imovel     Imovel   @relation(fields: [imovelId], references: [id])
 
   @@map("agendamentos")
 }

@@ -5,6 +5,7 @@ import routesImoveis from './routes/imoveis'
 import routesLogin from './routes/login'
 import routesRecuperaSenha from './routes/recuperaSenha'
 import routesValidaSenha from './routes/validaSenha'
+import routesAgendamentos from './routes/agendamentos'
 import cors from 'cors'
 
 const app = express()
@@ -19,6 +20,7 @@ app.use("/imoveis", routesImoveis)
 app.use("/login", routesLogin)
 app.use("/recupera-senha", routesRecuperaSenha)
 app.use("/valida-senha", routesValidaSenha)
+app.use("/agendamentos", routesAgendamentos)
 
 app.get('/', (req, res) => {
   res.send('API - ALUGUEL DE IMÓVEIS')
