@@ -8,7 +8,7 @@ import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 
 interface CustomRequest extends Request {
-  userLogadoId?: number;
+  userLogadoId?: string;
   userLogadoNome?: string;
   tipoUsuario?: string;
 }
@@ -21,7 +21,7 @@ const router = Router();
 const agendamentoSchema = z.object({
   data: z.coerce.date(),
   imovelId: z.number(),
-  adminId: z.number().optional(),
+  adminId: z.string().optional(),
 });
 
 router.post("/solicitar", verificaToken, verificaCliente, async (req: CustomRequest, res) => {
@@ -182,12 +182,17 @@ router.post("/confirmar", verificaToken, verificaAdmin, async (req: CustomReques
     if (agendamento.adminId !== userLogadoId) {
       return res.status(403).json({ erro: "Você não tem permissão para confirmar este agendamento" });
     }
+    
+    if (agendamento.confirmado) {
+      return res.status(400).json({ erro: "Agendamento já foi confirmado anteriormente" });
+    }
 
     const agendamentoAtualizado = await prisma.agendamento.update({
       where: { 
         id: valida.data.agendamentoId 
       },
       data: { 
+        confirmado: true
       },
       include: {
         imovel: true,
@@ -295,7 +300,8 @@ router.get("/admin", verificaToken, verificaAdmin, async (req: CustomRequest, re
         }
       },
       orderBy: [
-        { data: 'asc' }        // Por enquanto, apenas ordenar por data
+        { confirmado: 'asc' }, // Primeiro os não confirmados
+        { data: 'asc' }        // Depois por data
       ]
     });
 

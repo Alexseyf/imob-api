@@ -3,7 +3,7 @@ import "express";
 declare module "express" {
   export interface Request {
     tipoUsuario?: string;
-    userLogadoId?: number;
+    userLogadoId?: string;
     userLogadoNome?: string;
   }
 }

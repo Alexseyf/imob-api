@@ -25,7 +25,7 @@ model Imovel {
   isArquivado  Boolean       @default(false)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
-  usuarioId    Int
+  usuarioId    String
   usuario      Usuario       @relation(fields: [usuarioId], references: [id])
   agendamentos Agendamento[]
 
@@ -41,7 +41,7 @@ enum TipoImovel {
 }
 
 model Usuario {
-  id                  Int           @id @default(autoincrement())
+  id                  String        @db.VarChar(36) @id @default(uuid())
   nome                String        @db.VarChar(60)
   email               String        @unique @db.VarChar(40)
   senha               String        @db.VarChar(60)
@@ -71,7 +71,7 @@ model Log {
   complemento String      @db.VarChar(255)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
-  usuarioId   Int
+  usuarioId   String
   usuario     Usuario     @relation(fields: [usuarioId], references: [id])
   usuarioTipo TipoUsuario
 
@@ -84,9 +84,9 @@ model Agendamento {
   confirmado Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  adminId    Int
+  adminId    String
   admin      Usuario  @relation(fields: [adminId], references: [id], name: "adminAgendamento")
-  clienteId  Int
+  clienteId  String
   cliente    Usuario  @relation(fields: [clienteId], references: [id], name: "clienteAgendamento")
   imovelId   Int
   imovel     Imovel   @relation(fields: [imovelId], references: [id])
