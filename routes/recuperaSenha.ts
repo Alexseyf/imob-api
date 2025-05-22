@@ -51,15 +51,57 @@ router.post("/", async (req, res) => {
   });
 
   const mailOptions = {
-    from: "your-email@example.com",
+    from: "imobiliaria@example.com",
     to: email,
-    subject: "Recuperação de senha",
-    text: `${usuario.nome}, seu código de verificação é: ${code}`,
+    subject: "Recuperação de Senha - Imobiliária",
+    html: `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
+      <div style="text-align: center; margin-bottom: 20px;">
+        <h2 style="color: #2c3e50; margin-bottom: 5px;">Recuperação de Senha</h2>
+        <p style="color: #7f8c8d; font-size: 16px;">Imobiliária</p>
+      </div>
+      
+      <div style="margin-bottom: 25px;">
+        <p>Olá <strong>${usuario.nome}</strong>,</p>
+        <p>Recebemos uma solicitação para recuperar sua senha de acesso.</p>
+        <p>Utilize o código abaixo para prosseguir com a redefinição:</p>
+      </div>
+      
+      <div style="background-color: #f8f9fa; padding: 15px; border-radius: 4px; text-align: center; margin: 20px 0;">
+        <h3 style="color: #2c3e50; font-size: 24px; letter-spacing: 5px; margin: 0;">${code}</h3>
+      </div>
+      
+      <div style="margin-top: 25px;">
+        <p>Este código é válido por <strong>5 minutos</strong>.</p>
+        <p>Se você não solicitou a recuperação de senha, por favor, ignore este e-mail.</p>
+      </div>
+      
+      <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; color: #7f8c8d; font-size: 12px;">
+        <p>Este é um e-mail automático, por favor não responda.</p>
+        <p>Em caso de dúvidas, entre em contato com nosso suporte.</p>
+      </div>
+    </div>
+    `,
+    text: `Olá ${usuario.nome},
+
+Recebemos uma solicitação para recuperar sua senha de acesso.
+    
+Seu código de verificação é: ${code}
+    
+Este código é válido por 5 minutos.
+    
+Se você não solicitou a recuperação de senha, por favor, ignore este e-mail.
+    
+Este é um e-mail automático, por favor não responda.
+Em caso de dúvidas, entre em contato com nosso suporte.
+    
+Atenciosamente,
+Equipe Imobiliária`,
   };
 
   try {
     await transporter.sendMail(mailOptions);
-    res.status(200).send("Código de recuperação envidado para o email");
+    res.status(200).send("Código de recuperação enviado para o email");
   } catch (error) {
     res.status(500).send("Falha ao enviar o email");
   }

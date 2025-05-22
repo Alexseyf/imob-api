@@ -16,7 +16,7 @@ const imovelSchema = z.object({
   bairro: z.string(),
   isArquivado: z.boolean().optional(),
   tipoImovel: z.nativeEnum(TipoImovel),
-  usuarioId: z.number(),
+  usuarioId: z.string(),
   quarto: z.number(),
   banheiro: z.number(),
   cozinha: z.number(),
