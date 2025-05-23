@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { TipoUsuario } from "@prisma/client";
 
 interface CustomRequest extends Request {
-  userLogadoId?: number
+  userLogadoId?: string
   userLogadoNome?: string
   tipoUsuario?: string
 }

@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken"
 import { Request, Response, NextFunction } from 'express'
 
 interface TokenI {
-  userLogadoId: number
+  userLogadoId: string
   userLogadoNome: string
   tipoUsuario: string
 }

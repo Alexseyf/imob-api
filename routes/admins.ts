@@ -26,6 +26,48 @@ router.get("/", async (req, res) => {
   }
 })
 
+router.get("/clientes", verificaToken, verificaAdmin, async (req, res) => {
+  try {
+    const clientes = await prisma.usuario.findMany({
+      where: {
+        tipoUsuario: TipoUsuario.CLIENTE,
+        isArquivado: false
+      },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        createdAt: true,
+        updatedAt: true,
+        isArquivado: true,
+        tipoUsuario: true,
+        clienteAgendamentos: {
+          select: {
+            id: true,
+            data: true,
+            confirmado: true,
+            imovel: {
+              select: {
+                id: true,
+                endereco: true,
+                bairro: true
+              }
+            }
+          }
+        }
+      },
+      orderBy: {
+        nome: 'asc'
+      }
+    });
+    
+    res.status(200).json(clientes);
+  } catch (error) {
+    console.error("Erro ao buscar clientes:", error);
+    res.status(500).json({ erro: "Erro interno do servidor" });
+  }
+});
+
 router.post("/",  async (req, res) => {
   const valida = adminSchema.safeParse(req.body)
   if (!valida.success) {
