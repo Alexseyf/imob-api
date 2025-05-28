@@ -1,4 +1,4 @@
-import { PrismaClient, TipoImovel } from "@prisma/client";
+import { PrismaClient, TipoImovel, Prisma } from "@prisma/client";
 import { Router } from "express";
 import { z } from "zod";
 import { verificaToken } from "../middlewares/verificaToken";
@@ -70,14 +70,21 @@ router.get("/pesquisa/:termo", async (req, res) => {
   const termoNumero = Number(termo);
 
   if (isNaN(termoNumero)) {
-    try {
-      const tipoImovelValido = Object.values(TipoImovel).includes(termo.toUpperCase() as TipoImovel);
+    try {      const tipoImovelValido = Object.values(TipoImovel).includes(termo.toUpperCase() as TipoImovel);
       const imovel = await prisma.imovel.findMany({
         where: {
           OR: [
-            tipoImovelValido ? { tipoImovel: { equals: termo.toUpperCase() as TipoImovel } } : {},
-            { endereco: { contains: termo } },
-            { bairro: { contains: termo } },
+            tipoImovelValido ? { tipoImovel: { equals: termo.toUpperCase() as TipoImovel } } : {},            { 
+              endereco: { 
+                contains: termo,
+                mode: Prisma.QueryMode.insensitive
+              } 
+            },            { 
+              bairro: { 
+                contains: termo,
+                mode: Prisma.QueryMode.insensitive
+              } 
+            },
             
           ].filter(Boolean),
         },
@@ -87,7 +94,7 @@ router.get("/pesquisa/:termo", async (req, res) => {
       res.status(400).json(error);
     }
   } else {
-    if (termoNumero <= 3000) {
+    if (termoNumero <= 50000) {
       try {
         const imovel = await prisma.imovel.findMany({
           where: {

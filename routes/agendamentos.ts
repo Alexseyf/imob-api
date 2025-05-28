@@ -264,6 +264,38 @@ router.post(
         from: "imobiliaria@example.com",
         to: agendamento.cliente.email,
         subject: "Confirmação de Agendamento de Visita",
+        html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <h2 style="color: #2c3e50; margin-bottom: 5px;">Confirmação de Agendamento</h2>
+            <p style="color: #7f8c8d; font-size: 16px;">Imobiliária</p>
+          </div>
+          
+          <div style="margin-bottom: 25px;">
+            <p>Olá <strong>${agendamento.cliente.nome}</strong>,</p>
+            <p>Seu agendamento para visitar o imóvel foi confirmado!</p>
+          </div>
+          
+          <div style="background-color: #f8f9fa; padding: 15px; border-radius: 4px; margin: 20px 0;">
+            <h3 style="color: #2c3e50; font-size: 18px; margin-top: 0;">Detalhes da visita:</h3>
+            <p><strong>Data e horário:</strong> ${dataFormatada}</p>
+            <p><strong>Endereço:</strong> ${enderecoCompleto}</p>
+            <p><strong>Corretor responsável:</strong> ${agendamento.admin.nome}</p>
+            <p><strong>Contato do corretor:</strong> ${agendamento.admin.email}</p>
+            ${valida.data.mensagemAdicional ? `<p><strong>Informações adicionais:</strong> ${valida.data.mensagemAdicional}</p>` : ''}
+          </div>
+          
+          <div style="margin-top: 25px;">
+            <p>Aguardamos sua visita!</p>
+          </div>
+          
+          <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; color: #7f8c8d; font-size: 12px;">
+            <p>Este é um e-mail automático, por favor não responda.</p>
+            <p>Em caso de dúvidas, entre em contato com nosso suporte.</p>
+            <p style="margin-top: 10px;">Atenciosamente,<br>Equipe Imobiliária</p>
+          </div>
+        </div>
+        `,
         text: `Olá ${agendamento.cliente.nome},
 
 Seu agendamento para visitar o imóvel foi confirmado!
@@ -341,6 +373,50 @@ router.get(
       res.status(200).json(agendamentos);
     } catch (error) {
       console.error("Erro ao listar agendamentos do admin:", error);
+      res.status(500).json({ erro: "Erro interno do servidor" });
+    }
+  }
+);
+
+router.get(
+  "/todos",
+  verificaToken,
+  verificaAdmin,
+  async (req: CustomRequest, res) => {
+    const { userLogadoId } = req;
+
+    if (!userLogadoId) {
+      return res.status(401).json({ erro: "Usuário não autenticado" });
+    }
+
+    try {
+      const agendamentos = await prisma.agendamento.findMany({
+        include: {
+          imovel: true,
+          cliente: {
+            select: {
+              id: true,
+              nome: true,
+              email: true,
+            },
+          },
+          admin: {
+            select: {
+              id: true,
+              nome: true,
+              email: true,
+            },
+          },
+        },
+        orderBy: [
+          { confirmado: "asc" },
+          { data: "asc" },
+        ],
+      });
+
+      res.status(200).json(agendamentos);
+    } catch (error) {
+      console.error("Erro ao listar todos os agendamentos:", error);
       res.status(500).json({ erro: "Erro interno do servidor" });
     }
   }
