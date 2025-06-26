@@ -1,6 +1,6 @@
 import { passwordCheck } from '../utils/passwordUtils'
 import { PrismaClient, TipoUsuario } from "@prisma/client"
-import { Router } from "express"
+import { Router, Request, Response } from "express"
 import bcrypt from 'bcrypt'
 import { z } from 'zod'
 import { verificaToken } from '../middlewares/verificaToken'
