@@ -4,7 +4,9 @@
   "main": "index.js",
   "scripts": {
     "build": "prisma generate && tsc",
-    "dev": "npx ts-node-dev --respawn index.ts"
+    "dev": "npx ts-node-dev --respawn index.ts",
+    "vercel-build": "npx prisma migrate deploy",
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",
