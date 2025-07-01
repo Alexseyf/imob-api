@@ -36,22 +36,24 @@ router.get("/", async (req, res) => {
   }
 });
 
-// router.post("/", async (req, res) => {
-//   const valida = imovelSchema.safeParse(req.body);
-//   if (!valida.success) {
-//     res.status(400).json({ erro: valida.error });
-//     return;
-//   }
+router.post("/", async (req, res) => {
+  const valida = imovelSchema.safeParse(req.body);
+  if (!valida.success) {
+    res.status(400).json({ erro: valida.error });
+    return;
+  }
 
-//   try {
-//     const imovel = await prisma.imovel.create({
-//       data: { ...valida.data },
-//     });
-//     res.status(201).json(imovel);
-//   } catch (error) {
-//     res.status(400).json(error);
-//   }
-// });
+  const imovelData = { ...valida.data, bairro: valida.data.bairro.toLowerCase() };
+
+  try {
+    const imovel = await prisma.imovel.create({
+      data: { ...imovelData },
+    });
+    res.status(201).json(imovel);
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
 
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
