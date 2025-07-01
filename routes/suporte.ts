@@ -77,9 +77,11 @@ router.post("/imovel", verificaToken, verificaSuporte, async (req: Request | any
     return
   }
 
+  const imovelData = { ...valida.data, bairro: valida.data.bairro.toLowerCase() }
+
   try {
     const imovel = await prisma.imovel.create({
-      data: { ...valida.data }
+      data: { ...imovelData }
     })
 
     await prisma.log.create({
@@ -108,7 +110,7 @@ router.get("/imoveis-por-bairro", verificaToken, verificaSuporte, async (req: Re
       WHERE 
         "isArquivado" = false 
       GROUP BY 
-        bairro 
+        bairro
       ORDER BY 
         total_imoveis DESC
     `;
