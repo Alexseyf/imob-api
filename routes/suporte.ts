@@ -77,11 +77,9 @@ router.post("/imovel", verificaToken, verificaSuporte, async (req: Request | any
     return
   }
 
-  const imovelData = { ...valida.data, bairro: valida.data.bairro.toLowerCase() }
-
   try {
     const imovel = await prisma.imovel.create({
-      data: { ...imovelData }
+      data: { ...valida.data }
     })
 
     await prisma.log.create({
